@@ -1,0 +1,47 @@
+{
+  "package_format": "tin-workflow-package-v1",
+  "definition": {
+    "key": "outreach.alumni_resource_lists",
+    "title": "Get your product into the resources juniors share",
+    "description": "For products students or early-career professionals discover through someone a step ahead, find public junior-resource lists from alumni or seniors at target campuses, rank them by fit and reach, and draft a personal note for the founder to send.",
+    "executor": "codex.procedure",
+    "version": "1.0.0",
+    "system": "cold-outreach",
+    "schedule_modes": ["on_demand"],
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_id"],
+      "properties": {
+        "project_id": { "type": "string", "format": "uuid", "maxLength": 36 },
+        "focus": {
+          "type": "string",
+          "title": "Campus or program to focus on (optional)",
+          "description": "Narrow the search to a campus, degree program, bootcamp, or professional training program. Leave empty to use target audiences already named in Tin.",
+          "maxLength": 2000,
+          "default": "",
+          "x-tin-ui": { "control": "textarea", "order": 10 }
+        }
+      }
+    },
+    "prerequisites": [
+      { "kind": "artifact", "level": "recommended", "path": "reports/GROWTH_ONBOARDING_PLAN.md", "producer": "growth.onboarding_plan", "reason": "The onboarding plan identifies the buyer, target campuses or programs, and hard no's that constrain the research and draft." },
+      { "kind": "artifact", "level": "recommended", "path": "wiki/INDEX.md", "section": "### Feature map", "producer": "product.deep_dive", "reason": "The Feature map grounds the product fit and any claims in the note." },
+      { "kind": "artifact", "level": "recommended", "path": ".agents/skills/writing-style/SKILL.md", "producer": "style.capture", "reason": "The captured writing style guide shapes the personal note drafted for the founder." }
+    ],
+    "procedure": {
+      "prompt_path": "PROMPT.md",
+      "skills_path": "skills",
+      "skill_files": ["skills/alumni-resource-lists/SKILL.md"],
+      "entry_skill": "alumni-resource-lists",
+      "workspace": { "kind": "project.state" },
+      "sandbox": { "profile": "isolated", "egress": "fenced", "timeout_seconds": 900 },
+      "output": {
+        "kind": "project.artifact",
+        "path": "reports/outreach/ALUMNI_RESOURCE_LISTS.md",
+        "media_type": "text/markdown",
+        "max_bytes": 80000
+      }
+    }
+  }
+}
